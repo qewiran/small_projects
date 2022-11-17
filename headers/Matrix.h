@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -5,14 +6,17 @@
 #include "Row.h"
 class LU_Decomposer;
 class GR_Decomposer;
+
 class Matrix
 {
     friend class LU_Decomposer;
     friend class GR_Decomposer;
 
 private:
-    int n, m;
-    Row **rows;
+    int n=0, m=0;
+    Row **rows = nullptr;
+    void SwapCols(int, int);
+    void SwapRows(int, int);
 
 public:
     int GetN();

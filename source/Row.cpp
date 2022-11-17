@@ -12,24 +12,50 @@ double &Row::operator[](int index) const
     return values[index];
 }
 
+int Row::GetLength()
+{
+    return this->len;
+}
+
 void Row::Display()
 {
     for (int i = 0; i < len; i++)
-        std::cout << (*this)[i] << " ";
+    {
+        if (std::abs((*this)[i]) - 1e-10 > 0.0)
+            std::cout << (*this)[i] << " ";
+        else
+            std::cout << 0 << ' ';
+    }
     std::cout << "\n";
+}
+
+Row &Row::operator*(const double k)
+{
+    int N = this->len;
+    for (int i=0;i<N;i++)
+    {
+        (*this)[i]*=k;
+    }
+    return *this;
 }
 
 Row &Row::operator=(const Row &ref)
 {
-    len = ref.len;
-    std::copy(ref.values, ref.values + len, values);
+    if (this->len != ref.len)
+    {
+        this->len = ref.len;
+        if (this->values != nullptr)
+            delete[] this->values;
+        this->values = new double[len];
+    }
+    std::copy(ref.values,ref.values+ref.len,this->values);
     return *this;
 }
 
 Row &Row::operator-(const Row &subtr)
 {
     if (this->len < subtr.len)
-        throw std::invalid_argument("первая строчка короче второй (вычитание)");
+        throw std::invalid_argument("rows can not be added");
     Row *diff = new Row(len);
     for (int i = 0; i < len; i++)
         (*diff)[i] = (*this)[i] - subtr[i];
@@ -39,7 +65,7 @@ Row &Row::operator-(const Row &subtr)
 Row &Row::operator+(const Row &term)
 {
     if (this->len < term.len)
-        throw std::invalid_argument("первая строчка короче второй (сложение)");
+        throw std::invalid_argument("rows can not be subtracted");
     Row *sum = new Row(len);
     for (int i = 0; i < len; i++)
         (*sum)[i] = (*this)[i] + term[i];
@@ -61,7 +87,7 @@ Row::Row(int m)
 {
     if (values != nullptr)
         delete[] values;
-    len = m;
+    this->len = m;
     values = new double[m];
     for (int i = 0; i < m; i++)
         values[i] = 0;
