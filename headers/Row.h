@@ -1,12 +1,15 @@
 #pragma once
+#include <immintrin.h>
+#include <iostream>
+#include <algorithm>
 class Matrix;
-//class LU_Decomposer;
+// class LU_Decomposer;
 class Row
 {
     friend class Matrix;
-    //friend class LU_decomposer;
+    // friend class LU_decomposer;
 private:
-    int len=0;
+    int len = 0;
     double *values = nullptr;
 
 public:

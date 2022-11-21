@@ -1,5 +1,5 @@
 #include "Row.h"
-#include <algorithm>
+
 #include <iostream>
 
 double &Row::operator[](int index)
