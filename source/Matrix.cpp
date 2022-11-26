@@ -9,7 +9,14 @@ int Matrix::GetM()
 {
     return m;
 }
-
+void Matrix::SetRank(int r)
+{
+    this->rank=r;
+}
+int Matrix::GetRank()
+{
+    return rank;
+}
 void Matrix::SwapRows(int ind_1, int ind_2)
 {
     Row *temp = rows[ind_1];

@@ -2,6 +2,7 @@
 #include <immintrin.h>
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 class Matrix;
 // class LU_Decomposer;
 class Row
@@ -18,6 +19,7 @@ public:
     Row(const Row &);
     ~Row();
     Row &operator*(const double);
+    Row &operator*(const __m512d);
     Row &operator=(const Row &);
     Row &operator-(const Row &);
     Row &operator+(const Row &);
@@ -25,4 +27,5 @@ public:
     double &operator[](int) const;
     int GetLength();
     void Display();
+    void MakeRandom();
 };

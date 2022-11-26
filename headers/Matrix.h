@@ -12,12 +12,15 @@ class Matrix
     friend class GR_Decomposer;
 
 private:
-    int n=0, m=0;
+    int n = 0, m = 0;
+    int rank = 0;
     Row **rows = nullptr;
     void SwapCols(int, int);
     void SwapRows(int, int);
 
 public:
+    void SetRank(int);
+    int GetRank();
     int GetN();
     int GetM();
 

@@ -8,7 +8,7 @@ private:
 public:
     GR_Decomposer(Matrix &);
     ~GR_Decomposer();
-    Matrix *pInitialMatrix=nullptr;
-    Matrix *pG=nullptr;
-    Matrix *pR=nullptr;
+    Matrix *pInitialMatrix = nullptr;
+    Matrix *pG = nullptr;
+    Matrix *pR = nullptr;
 };

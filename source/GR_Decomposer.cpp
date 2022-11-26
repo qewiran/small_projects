@@ -33,7 +33,7 @@ double Dot(Row &a, Row &b)
 
     if (a.GetLength() != b.GetLength())
         throw std::invalid_argument("rows have diff-t lengths (dot)");
-        
+
     for (int i = 0; i < n; i++)
     {
         result += a[i] * b[i];
@@ -45,8 +45,6 @@ Row Proj(Row &a, Row &b)
 {
 
     int n = a.GetLength();
-    int m = n;
-
     if (a.GetLength() != b.GetLength())
         throw std::invalid_argument("rows have diff-t lengths (proj)");
 
@@ -71,10 +69,10 @@ void GR_Decomposer::Decomposition()
             (*pG)[i] = (*pG)[i] - Proj((*pInitialMatrix)[i], (*pG)[j]);
         }
         double norm = VecNorm((*pG)[i]);
-        (*pG)[i]=(*pG)[i]*(1/norm);
+        (*pG)[i] = (*pG)[i] * (1 / norm);
     }
     // pG->Display();
     Matrix Gt = (*pG).Transposed();
     pR = new Matrix(pInitialMatrix->n, pInitialMatrix->m);
-    *pR = Gt*(*pInitialMatrix);
+    *pR = Gt * (*pInitialMatrix);
 }

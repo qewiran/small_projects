@@ -32,11 +32,27 @@ void Row::Display()
 Row &Row::operator*(const double k)
 {
     int N = this->len;
-    for (int i=0;i<N;i++)
+    for (int i = 0; i < N; i++)
     {
-        (*this)[i]*=k;
+        (*this)[i] *= k;
     }
     return *this;
+}
+
+Row &Row::operator*(const __m512d coeff_v)
+{
+    Row *mul = new Row(len);
+
+    int i = 0;
+    for (; i < len - len % 8; i += 8)
+    {
+        _mm512_store_pd(&(*mul)[i], _mm512_mul_pd(_mm512_load_pd(&(*this)[i]), coeff_v));
+    }
+    for (; i < len; i++)
+    {
+        (*mul)[i] = (*this)[i] * coeff_v[0];
+    }
+    return *mul;
 }
 
 Row &Row::operator=(const Row &ref)
@@ -48,7 +64,7 @@ Row &Row::operator=(const Row &ref)
             delete[] this->values;
         this->values = new double[len];
     }
-    std::copy(ref.values,ref.values+ref.len,this->values);
+    std::copy(ref.values, ref.values + ref.len, this->values);
     return *this;
 }
 

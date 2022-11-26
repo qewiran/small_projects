@@ -61,6 +61,7 @@ void LU_Decomposer::Decomposition()
 
         if (std::abs(Copy[i][i]) - 1e-12 < 0.0)
         {
+            pInitialMatrix->SetRank(i);
             break;
         }
         for (int j = i + 1; j < N; j++)
@@ -133,17 +134,20 @@ Matrix LU_Decomposer::EquationSolution(const Matrix &B)
     out("y");
     y.Display();
     out("Ly");
-    Matrix Ly = (*pL)*y;
+    Matrix Ly = (*pL) * y;
     Ly.Display();
 
     Matrix z(N, M);
-
     for (int i = N - 1; i >= 0; --i)
     {
         for (int j = 0; j < M; ++j)
         {
             z[i][j] = y[i][j];
-
+        }
+        if (i >= pInitialMatrix->GetRank())
+            continue;
+        for (int j = 0; j < M; ++j)
+        {
             for (int k = i + 1; k < N; ++k)
             {
                 z[i][j] -= (*pU)[i][k] * z[k][j];
@@ -154,7 +158,7 @@ Matrix LU_Decomposer::EquationSolution(const Matrix &B)
     out("z");
     z.Display();
     out("Uz:");
-    Matrix Uz = (*pU)*z;
+    Matrix Uz = (*pU) * z;
     Uz.Display();
 
     return (*pQ) * z;
