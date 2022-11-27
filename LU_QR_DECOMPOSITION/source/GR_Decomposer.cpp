@@ -1,4 +1,4 @@
-#include "GR_Decomposer.h"
+#include "../headers_1/GR_Decomposer.h"
 GR_Decomposer::GR_Decomposer(Matrix &initialMatrix)
 {
     pInitialMatrix = &initialMatrix;
@@ -15,10 +15,10 @@ GR_Decomposer::~GR_Decomposer()
     if (pR != nullptr)
         pR->~Matrix();
 }
-double VecNorm(Row &a)
+double VecNorm(const std::vector<double> &a)
 {
     double result = 0;
-    int n = a.GetLength();
+    int n = a.size();
     for (int i = 0; i < n; i++)
     {
         result += a[i] * a[i];
@@ -26,12 +26,12 @@ double VecNorm(Row &a)
     return std::sqrt(result);
 }
 
-double Dot(Row &a, Row &b)
+double Dot(const std::vector<double> &a, const std::vector<double> &b)
 {
-    int n = a.GetLength();
+    int n = a.size();
     double result = 0;
 
-    if (a.GetLength() != b.GetLength())
+    if (a.size() != b.size())
         throw std::invalid_argument("rows have diff-t lengths (dot)");
 
     for (int i = 0; i < n; i++)
@@ -41,20 +41,20 @@ double Dot(Row &a, Row &b)
     return result;
 }
 
-Row Proj(Row &a, Row &b)
+std::vector<double> &Proj(const std::vector<double> &a, const std::vector<double> &b)
 {
 
-    int n = a.GetLength();
-    if (a.GetLength() != b.GetLength())
+    int n = a.size();
+    if (a.size() != b.size())
         throw std::invalid_argument("rows have diff-t lengths (proj)");
 
     double k = Dot(a, b) / Dot(b, b);
-    Row *result = new Row(n);
+    std::vector<double> result(n);
     for (int i = 0; i < n; i++)
     {
-        (*result)[i] = b[i] * k;
+        result[i] = b[i] * k;
     }
-    return *result;
+    return result;
 }
 
 void GR_Decomposer::Decomposition()

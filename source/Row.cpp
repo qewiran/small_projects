@@ -57,12 +57,13 @@ Row &Row::operator*(const __m512d coeff_v)
 
 Row &Row::operator=(const Row &ref)
 {
+
     if (this->len != ref.len)
     {
         this->len = ref.len;
+        this->values = new double[len];
         if (this->values != nullptr)
             delete[] this->values;
-        this->values = new double[len];
     }
     std::copy(ref.values, ref.values + ref.len, this->values);
     return *this;
