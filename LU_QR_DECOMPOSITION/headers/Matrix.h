@@ -5,13 +5,16 @@
 #include <stdexcept>
 #include <ctime>
 #include <iostream>
+
 class LU_Decomposer;
 class GR_Decomposer;
+class Iteration_Method;
 
 class Matrix
 {
     friend class LU_Decomposer;
     friend class GR_Decomposer;
+    friend class Iteration_Method;
 
 private:
     int n = 0, m = 0;
@@ -21,33 +24,39 @@ private:
     void SwapRows(int, int);
 
 public:
-    int GetRank();
-    int GetN();
-    int GetM();
+    int GetRank() const;
+    int GetN() const;
+    int GetM() const;
+    double max_row_abs = 0.0;
 
     void MakeRandom(bool);
     void MakeCustom();
     void MakeIdentity();
 
-    Matrix();
-
+    Matrix() = default;
     Matrix(int, int);
     Matrix(const Matrix &);
-    ~Matrix();
+    Matrix(Matrix &&) noexcept;
+    ~Matrix() = default;
 
     Matrix &operator*(const Matrix &);
+    Matrix &operator*(const double k);
     Matrix &operator+(const Matrix &);
     Matrix &operator-(const Matrix &);
-    Matrix &operator=(const Matrix &);
+    Matrix &operator=(Matrix);
     std::vector<double> &operator[](int);
     const std::vector<double> &operator[](int) const;
+    void swap(Matrix &matrix1, Matrix &matrix2) noexcept;
 
-    Matrix Transposed();
-    void Display();
+    Matrix Transposed() const;
+    void Display() const;
+    double Norm() const;
 };
 
-std::vector<double> operator+(const std::vector<double> &v1, const std::vector<double> &v2);
+std::vector<double> operator+(const std::vector<double> &v1,
+                              const std::vector<double> &v2);
 
-std::vector<double> operator-(const std::vector<double> &v1, const std::vector<double> &v2);
+std::vector<double> operator-(const std::vector<double> &v1,
+                              const std::vector<double> &v2);
 
 std::vector<double> operator*(const std::vector<double> &v1, double k);

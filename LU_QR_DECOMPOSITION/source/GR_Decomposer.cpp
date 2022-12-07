@@ -1,4 +1,5 @@
-#include "../headers_1/GR_Decomposer.h"
+#include "../headers/Matrix.h"
+#include "../headers/GR_Decomposer.h"
 GR_Decomposer::GR_Decomposer(Matrix &initialMatrix)
 {
     pInitialMatrix = &initialMatrix;
@@ -41,7 +42,7 @@ double Dot(const std::vector<double> &a, const std::vector<double> &b)
     return result;
 }
 
-std::vector<double> &Proj(const std::vector<double> &a, const std::vector<double> &b)
+std::vector<double> Proj(const std::vector<double> &a, const std::vector<double> &b)
 {
 
     int n = a.size();

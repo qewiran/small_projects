@@ -1,8 +1,8 @@
-#include "../headers_1/LU_Decomposer.h"
-
+#include "../headers/Matrix.h"
+#include "../headers/LU_Decomposer.h"
 #define out(a) std::cout << a << ": \n";
 
-std::tuple<double, int, int> GetMax(Matrix &matrix, int start_index)
+std::tuple<double, int, int> GetMax(const Matrix &matrix, int start_index)
 {
     int max_row = start_index, max_col = start_index;
     double matrix_max = matrix[start_index][start_index];
@@ -119,10 +119,7 @@ Matrix LU_Decomposer::EquationSolution(const Matrix &B)
 {
     int M = B.m;
     int N = (*pInitialMatrix).n;
-    out("L");
-    pL->Display();
-    out("U");
-    pU->Display();
+
     Matrix y(N, M);
 
     for (int i = 0; i < N; ++i)
@@ -138,11 +135,6 @@ Matrix LU_Decomposer::EquationSolution(const Matrix &B)
     }
     if (!IsCompatible(y))
         throw std::invalid_argument("slae is not compatible\n");
-    out("y");
-    y.Display();
-    out("Ly");
-    Matrix Ly = (*pL) * y;
-    Ly.Display();
 
     Matrix z(N, M);
     for (int i = N - 1; i >= 0; --i)
@@ -162,11 +154,6 @@ Matrix LU_Decomposer::EquationSolution(const Matrix &B)
             z[i][j] /= (*pU)[i][i];
         }
     }
-    out("z");
-    z.Display();
-    out("Uz:");
-    Matrix Uz = (*pU) * z;
-    Uz.Display();
 
     return (*pQ) * z;
 }
@@ -175,14 +162,11 @@ Matrix LU_Decomposer::GetInverted()
 {
     Matrix I(pInitialMatrix->n, pInitialMatrix->m);
     I.MakeIdentity();
-    Matrix temp = I * (*pP);
-    out("PB");
-    temp.Display();
-    return EquationSolution(temp);
+    return EquationSolution(I * (*pP));
 }
 LU_Decomposer::LU_Decomposer(Matrix &InitialMatrix)
 {
-    // SetSquare();
+    //SetSquare();
     this->pInitialMatrix = &InitialMatrix;
     int N = InitialMatrix.n;
     int M = InitialMatrix.m;

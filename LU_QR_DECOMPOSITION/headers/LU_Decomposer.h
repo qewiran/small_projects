@@ -1,5 +1,5 @@
 #pragma once
-#include "../headers_1/Matrix.h"
+#include "../headers/Matrix.h"
 #include <tuple>
 
 class LU_Decomposer
@@ -8,11 +8,12 @@ private:
     void Decomposition();
     void SetSquare();
     bool IsCompatible(const Matrix &);
+    Matrix *pInitialMatrix = nullptr;
 
 public:
     LU_Decomposer(Matrix &);
     ~LU_Decomposer();
-    Matrix *pInitialMatrix = nullptr;
+    
     Matrix *pL = nullptr;
     Matrix *pP = nullptr;
     Matrix *pU = nullptr;

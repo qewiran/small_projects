@@ -1,4 +1,4 @@
-#include "../headers_1/Matrix.h"
+#include "../headers/Matrix.h"
 
 std::vector<double> operator+(const std::vector<double> &v1, const std::vector<double> &v2)
 {
@@ -29,17 +29,17 @@ std::vector<double> operator*(const std::vector<double> &v1, double k)
     return result;
 }
 
-int Matrix::GetN()
+int Matrix::GetN() const
 {
     return n;
 }
 
-int Matrix::GetM()
+int Matrix::GetM() const
 {
     return m;
 }
 
-int Matrix::GetRank()
+int Matrix::GetRank() const
 {
     return rank;
 }
@@ -70,25 +70,6 @@ const std::vector<double> &Matrix::operator[](int index) const
     return rows[index];
 }
 
-Matrix &Matrix::operator=(const Matrix &ref)
-{
-    if (!this->rows.empty())
-        this->~Matrix();
-    this->n = ref.n;
-    this->m = ref.m;
-    this->rows.resize(n);
-    for (int i = 0; i < n; i++)
-    {
-        (*this)[i] = ref[i];
-    }
-    return *this;
-}
-
-Matrix::Matrix(const Matrix &ref)
-{
-    operator=(ref);
-}
-
 Matrix &Matrix::operator*(const Matrix &factor)
 {
     int rows1 = this->n;
@@ -109,6 +90,16 @@ Matrix &Matrix::operator*(const Matrix &factor)
             for (int k = 0; k < cols1; k++)
                 (*result)[i][j] += (*this)[i][k] * factor[k][j];
         }
+    }
+    return *result;
+}
+
+Matrix &Matrix::operator*(const double k)
+{
+    Matrix *result = new Matrix(n, m);
+    for (int i = 0; i < this->n; i++)
+    {
+        (*result)[i] = (*this)[i] * k;
     }
     return *result;
 }
@@ -137,11 +128,43 @@ Matrix &Matrix::operator-(const Matrix &term)
     return *result;
 }
 
-Matrix::Matrix()
+Matrix &Matrix::operator=(Matrix ref)
 {
-    this->m = 1;
-    this->n = 1;
-    this->rows.push_back({0.0}); 
+    swap(*this, ref);
+    return *this;
+}
+
+void Matrix::swap(Matrix &matrix1, Matrix &matrix2) noexcept
+{
+    std::swap(matrix1.max_row_abs, matrix2.max_row_abs);
+    std::swap(matrix1.m, matrix2.m);
+    std::swap(matrix1.n, matrix2.n);
+    std::swap(matrix1.rows, matrix2.rows);
+}
+
+Matrix::Matrix(const Matrix &ref)
+{
+    if (ref.n > this->n)
+    {
+        this->rows.resize(ref.n);
+        for (int i = this->n; i < ref.n; i++)
+        {
+            (*this)[i] = ref[i];
+        }
+    }
+    else
+    {
+        this->rows.erase(this->rows.begin() + ref.n, this->rows.end());
+        this->rows.shrink_to_fit();
+    }
+    this->max_row_abs = ref.max_row_abs;
+    this->rows = ref.rows;
+    this->n = ref.n;
+    this->m = ref.m;
+}
+Matrix::Matrix(Matrix &&ref) noexcept : rows(std::move(ref.rows)),
+                                        m(ref.m), n(ref.n)
+{
 }
 
 Matrix::Matrix(int n, int m)
@@ -155,20 +178,19 @@ Matrix::Matrix(int n, int m)
     }
 }
 
-Matrix::~Matrix()
-{
-    rows.clear();
-}
-
 void Matrix::MakeRandom(bool degen)
 {
     std::srand(time(NULL));
     for (int i = 0; i < n; i++)
     {
+        double row_sum = 0.0;
         for (int j = 0; j < m; j++)
         {
             (*this)[i][j] = rand() % 100 * pow(-1.0, rand() % 7);
+            if (i != j)
+                row_sum += std::abs((*this)[i][j]);
         }
+        max_row_abs = std::max(row_sum, max_row_abs);
     }
     if (degen)
     {
@@ -181,10 +203,14 @@ void Matrix::MakeCustom()
 {
     for (int i = 0; i < n; i++)
     {
+        double row_sum = 0.0;
         for (int j = 0; j < m; j++)
         {
             std::cin >> (*this)[i][j];
+            if (i != j)
+                row_sum += std::abs((*this)[i][j]);
         }
+        max_row_abs = std::max(row_sum, max_row_abs);
     }
 }
 
@@ -200,29 +226,49 @@ void Matrix::MakeIdentity()
                 (*this)[i][j] = 0;
         }
     }
+    max_row_abs = 1;
 }
 
-void Matrix::Display()
+void Matrix::Display() const
 {
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < m; j++)
         {
-            std::cout << (*this)[i][j]<<" ";
+            if (std::abs((*this)[i][j]) - 1e-13 > 0.0)
+                std::cout << (*this)[i][j] << " ";
+            else
+                std::cout << 0 << " ";
         }
-        std::cout<<"\n";
+        std::cout << "\n";
     }
 }
 
-Matrix Matrix::Transposed()
+Matrix Matrix::Transposed() const
 {
     Matrix *Tr = new Matrix(n, m);
     for (int i = 0; i < n; i++)
     {
+        double row_sum = 0.0;
         for (int j = 0; j < m; j++)
         {
             (*Tr)[i][j] = (*this)[j][i];
+            if (i != j)
+                row_sum += std::abs((*this)[i][j]);
         }
+        (*Tr).max_row_abs = std::max(max_row_abs, row_sum);
     }
     return *Tr;
+}
+double Matrix::Norm() const
+{
+    double result = 0.0;
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            result += (*this)[i][j] * (*this)[i][j];
+        }
+    }
+    return std::sqrt(result);
 }
